@@ -13,15 +13,15 @@ library(THFstyle)
 
 # Download data -----------------------------------------------------------
 
-count18plus<-read_csv(here('ACSCs', 'data', 'age_grp_tab_plus18.csv'))
-count65plus<-read_csv(here('ACSCs', 'data', 'age_grp_tab_plus65.csv'))
-count18plus4conds<-read_csv(here('ACSCs', 'data', 'age_grp_tab_plus18_5cond.csv'))
-count65plus4conds<-read_csv(here('ACSCs', 'data', 'age_grp_tab_plus65_5cond.csv'))
-pop<-read_csv(here('ACSCs', 'outputs', 'pop_calcs.csv'))
-plus18<-read_csv(here('ACSCs', 'data', 'plus18tab.csv'))
-plus65<-read_csv(here('ACSCs', 'data', 'plus65tab.csv'))
-plus18_4cond<-read_csv(here('ACSCs', 'data', 'plus18tab5cond.csv'))
-plus165_4cond<-read_csv(here('ACSCs', 'data', 'plus65tab5cond.csv'))
+count18plus<-read_csv(here('data', 'age_grp_tab_plus18.csv'))
+count65plus<-read_csv(here('data', 'age_grp_tab_plus65.csv'))
+count18plus4conds<-read_csv(here('data', 'age_grp_tab_plus18_5cond.csv'))
+count65plus4conds<-read_csv(here('data', 'age_grp_tab_plus65_5cond.csv'))
+pop<-read_csv(here('outputs', 'pop_calcs.csv'))
+plus18<-read_csv(here('data', 'plus18tab.csv'))
+plus65<-read_csv(here('data', 'plus65tab.csv'))
+plus18_4cond<-read_csv(here('data', 'plus18tab5cond.csv'))
+plus165_4cond<-read_csv(here('data', 'plus65tab5cond.csv'))
 
 # Data clean and merge ----------------------------------------------------
 
@@ -215,9 +215,9 @@ dt_tab<-dt %>%
   arrange(desc(sex))
 
   
-write.csv(dt_tab,here('ACSCs', 'outputs', "counts.csv"))
+write.csv(dt_tab,here('outputs', "counts.csv"))
 
-write.csv(dt_desc, here('ACSCs', 'outputs', "rates_by_dep.csv"))
+write.csv(dt_desc, here('outputs', "rates_by_dep.csv"))
 
 
 
