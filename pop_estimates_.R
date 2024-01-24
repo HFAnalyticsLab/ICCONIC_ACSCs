@@ -15,13 +15,13 @@ library(tidyverse)
 #2019 
 link<-'https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/adhocs/12413deathregistrationsandpopulationsbyindexofmultipledeprivationimddecileenglandandwales2019/deathsandpopsbyimd2019final.xlsx'
 
-destfile <- here::here('ACSCs','data', "popestimates.xlsx")
+destfile <- here::here('data', "popestimates.xlsx")
 curl_download(link, destfile = destfile)
 
 
 
 #2019 
-pop<-readxl::read_excel("ACSCs/data/popestimates.xlsx", sheet='Table 3 - England populations')
+pop<-readxl::read_excel("data/popestimates.xlsx", sheet='Table 3 - England populations')
 
 #2019
 pop_clean<-pop %>% 
@@ -109,12 +109,12 @@ age_grp_pop_19
 #2020
 link<- 'https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/populationandmigration/populationestimates/adhocs/13773populationsbyindexofmultipledeprivationimddecileenglandandwales2020/populationbyimdenglandandwales2020.xlsx'
 
-destfile <- here::here('ACSCs','data', "popestimates.xlsx")
+destfile <- here::here('data', "popestimates.xlsx")
 curl_download(link, destfile = destfile)
 
 
 #2020
-pop<-readxl::read_excel("ACSCs/data/popestimates.xlsx", sheet='Table 1 - England')
+pop<-readxl::read_excel("data/popestimates.xlsx", sheet='Table 1 - England')
 
 #2020
 pop_clean<-pop %>% 
@@ -189,7 +189,7 @@ age_grp_pop_20<-pop_clean %>%
 age_grp_pop<-age_grp_pop_19 %>% 
   left_join(age_grp_pop_20)
 
-write.csv(age_grp_pop,here('ACSCs', 'outputs', "pop_calcs.csv"))
+write.csv(age_grp_pop,here('outputs', "pop_calcs.csv"))
 
 
 
