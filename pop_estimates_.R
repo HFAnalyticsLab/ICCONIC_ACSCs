@@ -37,11 +37,11 @@ pop_clean<-pop %>%
   rename(sex=na) %>%
   mutate(age=as.numeric(gsub("x", "",age))) %>% 
   #1=most deprived, 10=least deprived
-  mutate(quint_imd=case_when (deprivation_decile_imd_2019 %in% 1:2 ~ "5", 
-                              deprivation_decile_imd_2019 %in% 3:4 ~ "4", 
+  mutate(quint_imd=case_when (deprivation_decile_imd_2019 %in% 1:2 ~ "1", 
+                              deprivation_decile_imd_2019 %in% 3:4 ~ "2", 
                               deprivation_decile_imd_2019 %in% 5:6 ~ "3", 
-                              deprivation_decile_imd_2019 %in% 7:8 ~ "2", 
-                              deprivation_decile_imd_2019 %in% 9:10 ~ "1")) %>% 
+                              deprivation_decile_imd_2019 %in% 7:8 ~ "4", 
+                              deprivation_decile_imd_2019 %in% 9:10 ~ "5")) %>% 
   mutate(plus18=ifelse(age>=18,1,0), 
          plus65=ifelse(age>=65,1,0))
 
