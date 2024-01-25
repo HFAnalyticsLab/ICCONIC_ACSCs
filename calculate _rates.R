@@ -91,7 +91,7 @@ dep_extract<-function(raw=plus18,cond5=TRUE) {
 plus18<-dep_extract(plus18, cond5=FALSE)
 plus65<-dep_extract(plus65, cond5=FALSE)
 plus18_5cond<-dep_extract(plus18_5cond, cond5=TRUE)
-plus65_5cond<-dep_extract(plus165_5cond, cond5=TRUE)
+plus65_5cond<-dep_extract(plus65_5cond, cond5=TRUE)
 
 
 dt_desc<-plus18_5cond %>%
@@ -130,10 +130,12 @@ dt %>%
   facet_grid(cols=vars(sex), rows=vars(dep_type))+
   scale_fill_manual(values = pal) + 
   scale_colour_manual(values=pal)+
-  labs(x="age group", y="rate of ACSCs admissions")+
+  labs(x="age group", y="rate of ACSCs admissions", title="9 conditions, 18+")+
   theme_minimal()+
   theme(axis.text.x=element_text(angle=45))
 
+
+ggsave(here('outputs', 'plot_1.png'), dpi=300,width = 10, height =6.5)
 
 #65+ 
 
@@ -144,10 +146,11 @@ dt %>%
   facet_grid(cols=vars(sex), rows=vars(dep_type))+
   scale_fill_manual(values = pal) + 
   scale_colour_manual(values=pal)+
-  labs(x="age group", y="rate of ACSCs admissions")+
+  labs(x="age group", y="rate of ACSCs admissions", title="9 conditions, 65+")+
   theme_minimal()+
   theme(axis.text.x=element_text(angle=45))
 
+ggsave(here('outputs', 'plot_2.png'), dpi=300,width = 10, height =6.5)
 
 #5 conditions 
 dt %>% 
@@ -156,11 +159,11 @@ dt %>%
   facet_grid(cols=vars(sex), rows=vars(dep_type))+
   scale_fill_manual(values = pal) + 
   scale_colour_manual(values=pal)+
-  labs(x="age group", y="rate of ACSCs admissions")+
+  labs(x="age group", y="rate of ACSCs admissions", title="5 conditions, 18+")+
   theme_minimal()+
   theme(axis.text.x=element_text(angle=45))
 
-
+ggsave(here('outputs', 'plot_3.png'), dpi=300,width = 10, height =6.5)
 #65+ 
 
 dt %>% 
@@ -170,10 +173,10 @@ dt %>%
   facet_grid(cols=vars(sex), rows=vars(dep_type))+
   scale_fill_manual(values = pal) + 
   scale_colour_manual(values=pal)+
-  labs(x="age group", y="rate of ACSCs admissions")+
+  labs(x="age group", y="rate of ACSCs admissions", title="5 conditions, 65+")+
   theme_minimal()+
   theme(axis.text.x=element_text(angle=45))
-
+ggsave(here('outputs', 'plot_4.png'), dpi=300,width = 10, height =6.5)
 
 #IMD
 
