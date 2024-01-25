@@ -1,5 +1,5 @@
 #Pop estimates by age, sex and imd 
-
+rm(list=ls())
 #Library 
 library(curl)
 library(janitor)
@@ -44,6 +44,66 @@ pop_clean<-pop %>%
                               deprivation_decile_imd_2019 %in% 9:10 ~ "5")) %>% 
   mutate(plus18=ifelse(age>=18,1,0), 
          plus65=ifelse(age>=65,1,0))
+
+
+#work out mean age, sd, and median
+
+calcs<-pop_clean %>% 
+  group_by(age) %>% 
+  summarise(count=sum(pop))
+  
+#calculate mid point for each group 
+calcs$midpoint <- (calcs$age - 0.5) * 1
+
+# Calculate total count of the population
+total_count <- sum(calcs$count)
+
+# Calculate weighted mean age
+weighted_mean_age <- sum(calcs$midpoint * calcs$count) / total_count
+
+# Calculate weighted standard deviation (SD) age
+weighted_sd_age <- sqrt(sum((calcs$midpoint - weighted_mean_age)^2 * calcs$count) / total_count)
+
+# Calculate cumulative sum of population counts
+calcs$cumulative_count <- cumsum(calcs$count)
+
+# Find median age
+median_age <- min(calcs$age[calcs$cumulative_count >= total_count / 2])
+
+# Print the results
+print(paste("Mean Age:", weighted_mean_age))
+print(paste("Standard Deviation Age:", weighted_sd_age))
+print(paste("Median Age:", median_age))
+
+#for65s
+
+calcs65<-pop_clean %>% 
+  group_by(age) %>% 
+  summarise(count=sum(pop)) %>% 
+  filter(age>=65)
+
+#calculate mid point for each group 
+calcs65$midpoint <- (calcs65$age - 0.5) * 1
+
+# Calculate total count of the population
+total_count65 <- sum(calcs65$count)
+
+# Calculate weighted mean age
+weighted_mean_age65 <- sum(calcs65$midpoint * calcs65$count) / total_count65
+
+# Calculate weighted standard deviation (SD) age
+weighted_sd_age65 <- sqrt(sum((calcs65$midpoint - weighted_mean_age65)^2 * calcs65$count) / total_count65)
+
+# Calculate cumulative sum of population counts
+calcs65$cumulative_count <- cumsum(calcs65$count)
+
+# Find median age
+median_age65 <- min(calcs65$age[calcs65$cumulative_count >= total_count65 / 2])
+
+# Print the results
+print(paste("Mean Age:", weighted_mean_age65))
+print(paste("Standard Deviation Age:", weighted_sd_age65))
+print(paste("Median Age:", median_age65))
 
 
 
@@ -196,5 +256,8 @@ write.csv(age_grp_pop,here('outputs', "pop_calcs.csv"))
 
 
 
-
+population_data <- data.frame(
+  age = 1:100,  # Age groups from 1 to 100
+  count = sample(50:200, 100, replace = TRUE)  # Sample counts of population for each age group
+)
 

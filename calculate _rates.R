@@ -21,14 +21,12 @@ pop<-read_csv(here('outputs', 'pop_calcs.csv'))
 plus18<-read_csv(here('data', 'plus18tab.csv'))
 plus65<-read_csv(here('data', 'plus65tab.csv'))
 plus18_5cond<-read_csv(here('data', 'plus18tab5cond.csv'))
-plus165_5cond<-read_csv(here('data', 'plus65tab5cond.csv'))
-plus18_old<-read_csv(here('data', 'plus18tab_old.csv'))
+plus65_5cond<-read_csv(here('data', 'plus65tab5cond.csv'))
+#plus18_old<-read_csv(here('data', 'plus18tab_old.csv'))
 
 # Data clean and merge ----------------------------------------------------
 
-#In our data set 5 is the most deprived and 1 is the least deprived 
-#same with income, 5 is the lowest income and 1 is the highest income 
-
+#in raw data sets, 1 is most deprived and 5 is least deprived
 
 dt <- count18plus %>% 
   select(-1) %>% 
@@ -37,10 +35,12 @@ dt <- count18plus %>%
   filter(!is.na(count)) %>% 
   left_join(count18plus5conds %>% 
               select(-1) %>% 
-              rename(counts5conds=count) %>% 
+              rename(count5conds=count) %>% 
               mutate(dep_type=ifelse(type %in% c("IMD", "income"), type, NA)) %>% 
               fill(dep_type, .direction="down"),
             by = c("type", "sex", "age_grp", "dep_type")) %>% 
+  #changing it so that 5 is the most deprived and 1 is the least deprived 
+  #same with income, 5 is the lowest income and 1 is the highest income 
   mutate(type=case_when(type=="1"~ "5", 
                          type=="2"~ "4", 
                          type=="4"~"2", 
@@ -49,9 +49,10 @@ dt <- count18plus %>%
   left_join(pop %>% 
               select(quint_imd:plus65), by = c("type" = "quint_imd", "sex", "age_grp")) %>% 
   mutate(rate19=100*(count/pop19)) %>% 
-  mutate(rate19_5conds=100*(counts5conds/pop19)) %>% 
+  mutate(rate19_5conds=100*(count5conds/pop19)) %>% 
   filter(!is.na(rate19)) %>% 
   rename(quintile=type) %>% 
+  #adding labels
   mutate(label=case_when(dep_type=="IMD"& quintile=="1"~"Q1-least deprived", 
                          dep_type=="IMD"& quintile=="2"~"Q2",
                          dep_type=="IMD"& quintile=="3"~"Q3", 
@@ -103,7 +104,19 @@ dt_desc<-plus18_5cond %>%
               mutate(conds="9conds", age_grp="65plus")) %>%
   left_join(pop %>%
               select(quint_imd, age_grp, pop19), by = c("type" = "quint_imd", "age_grp")) %>%
-  mutate(rate=100*(count/pop19)) 
+  mutate(rate=100*(count/pop19)) %>% 
+  rename(quintile=type) %>% 
+  mutate(label=case_when(dep_type=="IMD"& quintile=="1"~"Q1-least deprived", 
+                         dep_type=="IMD"& quintile=="2"~"Q2",
+                         dep_type=="IMD"& quintile=="3"~"Q3", 
+                         dep_type=="IMD"& quintile=="4"~"Q4", 
+                         dep_type=="IMD"& quintile=="5"~"Q5-most deprived", 
+                         dep_type!="IMD"& quintile=="1"~"Q1-Highest income", 
+                         dep_type!="IMD"& quintile=="2"~"Q2",
+                         dep_type!="IMD"& quintile=="3"~"Q3",
+                         dep_type!="IMD"& quintile=="4"~"Q4",
+                         dep_type!="IMD"& quintile=="5"~"Q5-Lowest income"))
+  
 
 # data visualization  ------------------------------------------------------
 
@@ -226,12 +239,22 @@ dt %>%
 # Table shells ------------------------------------------------------------
 
 dt_tab<-dt %>% 
-  mutate(sex=factor(sex, levels=c("Males", "Females"))) %>% 
+  mutate(sex=factor(sex, levels=c("Males", "Females"), labels=c("M", "F"))) %>% 
   mutate(age_grp=factor(age_grp, levels=c("18-39","35-39", "40-44","45-49", "50-54", 
                                           "55-59", "60-64","65-69","70-74", "75-79", "80-84", "85-89","90+"))) %>% 
-  select(dep_type, quintile, age_grp, sex, pop19, count, counts5conds) %>% 
+  select(dep_type, quintile, age_grp, sex, pop19, count, count5conds) %>% 
   group_by(dep_type, quintile, age_grp) %>%
-  arrange(desc(sex)) 
+  arrange((sex)) %>% 
+  mutate(label=case_when(dep_type=="IMD"& quintile=="1"~"Q1-least deprived", 
+                         dep_type=="IMD"& quintile=="2"~"Q2",
+                         dep_type=="IMD"& quintile=="3"~"Q3", 
+                         dep_type=="IMD"& quintile=="4"~"Q4", 
+                         dep_type=="IMD"& quintile=="5"~"Q5-most deprived", 
+                         dep_type!="IMD"& quintile=="1"~"Q1-Highest income", 
+                         dep_type!="IMD"& quintile=="2"~"Q2",
+                         dep_type!="IMD"& quintile=="3"~"Q3",
+                         dep_type!="IMD"& quintile=="4"~"Q4",
+                         dep_type!="IMD"& quintile=="5"~"Q5-Lowest income"))
 
   
 write.csv(dt_tab,here('outputs', "counts.csv"))
