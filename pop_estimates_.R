@@ -105,7 +105,21 @@ print(paste("Mean Age:", weighted_mean_age65))
 print(paste("Standard Deviation Age:", weighted_sd_age65))
 print(paste("Median Age:", median_age65))
 
+#proportion of females
 
+pop_clean %>% 
+  filter(plus18==1) %>% 
+  group_by(sex) %>% 
+  summarise(count=sum(pop)) %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=count/total)
+
+pop_clean %>% 
+  filter(plus65==1) %>% 
+  group_by(sex) %>% 
+  summarise(count=sum(pop)) %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=count/total)
 
 # By age group, sex, deprivation --------------------------------------------------
 
@@ -254,10 +268,4 @@ write.csv(age_grp_pop,here('outputs', "pop_calcs.csv"))
 
 
 
-
-
-population_data <- data.frame(
-  age = 1:100,  # Age groups from 1 to 100
-  count = sample(50:200, 100, replace = TRUE)  # Sample counts of population for each age group
-)
 
