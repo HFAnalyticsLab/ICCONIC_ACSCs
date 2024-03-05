@@ -64,6 +64,11 @@ dt <- count18plus %>%
                          dep_type!="IMD"& quintile=="4"~"Q4",
                          dep_type!="IMD"& quintile=="5"~"Q5-Lowest income"))
 
+dt %>% 
+  filter(dep_type=="IMD") %>% 
+ summarise(count=sum(count))
+
+
 
 dep_extract<-function(raw=plus18,cond5=TRUE) {
   #select the counts by deprivation (IMD and income)
@@ -303,7 +308,7 @@ dt_eng %>%
 
 #LOS -------------------------------------------------------------------
 
-count18plus_zero_los<-read_csv(here('data', 'age_grp_tab_plus18_zero_los.csv'))
+count18plus_zero_los<-readr::read_csv(here('data', 'age_grp_tab_plus18_zero_los.csv'))
 
 dt_zero_los <- count18plus_zero_los %>% 
   select(-1) %>% 
@@ -320,6 +325,7 @@ dt_zero_los <- count18plus_zero_los %>%
   rename(quintile=type) %>% 
   mutate(rate19=100*(count/pop19)) %>% 
   filter(!is.na(rate19)) 
+
 
 #same pattern as without excluding the 0 day LOS 
 dt_zero_los %>% 
@@ -344,6 +350,31 @@ dt_zero_los %>%
   labs(x="age group", y="rate of ACSCs admissions")+
   theme_minimal()+
   theme(axis.text.x=element_text(angle=45))
+
+
+#See who is more likely to have 0 day stays 
+#9 conditions 
+
+dt_zero_los %>% 
+  filter(zero_los==1) %>% 
+  group_by(sex) %>% 
+  summarise(n=sum(count))
+
+dt_zero_los %>% 
+  filter(zero_los==1 ) %>% 
+  group_by(age_grp, sex, dep_type, quintile) %>% 
+  summarise(n=sum(count)) %>% 
+  ggplot(aes(x=age_grp, y=n, fill=quintile, colour=quintile))+
+  geom_bar(stat="identity", position="dodge") +
+  facet_grid(cols=vars(sex), rows=vars(dep_type))+
+  scale_fill_manual(values = pal) + 
+  scale_colour_manual(values=pal)+
+  labs(x="age group", y="number of admissions")+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=45))
+
+
+
 
 
 
@@ -375,6 +406,165 @@ dt_acsc %>%
   scale_fill_manual(values = pal) + 
   scale_colour_manual(values=pal)+
   labs(x="age group", y="rate of ACSCs admissions")+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=45))
+
+
+
+dt_acsc %>% 
+  filter(dep_type=="IMD") %>% 
+  ggplot(aes(x=acsc_group, y=count, fill=quintile, colour=quintile))+
+  geom_bar(stat="identity", position="dodge") +
+  facet_grid(rows=vars(sex))+
+  scale_fill_manual(values = pal) + 
+  scale_colour_manual(values=pal)+
+  labs(x="acsc_group", y="count of ACSCs admissions")+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=45))
+
+
+dt_acsc %>% 
+  filter(dep_type=="income") %>% 
+  ggplot(aes(x=age_grp, y=rate19, fill=quintile, colour=quintile))+
+  geom_bar(stat="identity", position="dodge") +
+  facet_grid(cols=vars(acsc_group), rows=vars(sex))+
+  scale_fill_manual(values = pal) + 
+  scale_colour_manual(values=pal)+
+  labs(x="age group", y="rate of ACSCs admissions")+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=45))
+
+colfun<-colorRampPalette(c('#53a9cd','#dd0031'))
+pal<-colfun(9)
+
+
+dt_acsc %>% 
+  filter(dep_type=="IMD") %>% 
+  group_by(acsc_group) %>% 
+  summarise(count=sum(count)) %>% 
+  ungroup() %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=100*(count/total)) 
+
+
+dt_acsc %>% 
+  filter(dep_type=="IMD" & plus65==1) %>% 
+  group_by(acsc_group) %>% 
+  summarise(count=sum(count)) %>% 
+  ungroup() %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=100*(count/total)) 
+
+
+dt_acsc %>% 
+  filter(dep_type=="IMD") %>% 
+  group_by(acsc_group, quintile) %>% 
+  summarise(count=sum(count)) %>% 
+  ungroup() %>% 
+  group_by(quintile) %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=100*(count/total)) %>% 
+  ggplot(aes(x=acsc_group, y=prop, fill=quintile, colour=quintile))+
+  geom_bar(stat="identity", position="dodge") +
+  #facet_grid(cols=vars(acsc_group), rows=vars(sex))+
+  scale_fill_manual(values = pal) + 
+  scale_colour_manual(values=pal)+
+  labs(x="acsc_group", y="props of ACSCs admissions")+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=45))
+
+
+dt_acsc %>% 
+  filter(dep_type=="IMD"&plus65==1) %>% 
+  group_by(acsc_group, quintile) %>% 
+  summarise(count=sum(count)) %>% 
+  ungroup() %>% 
+  group_by(quintile) %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=100*(count/total)) %>% 
+  ggplot(aes(x=acsc_group, y=prop, fill=quintile, colour=quintile))+
+  geom_bar(stat="identity", position="dodge") +
+  #facet_grid(cols=vars(acsc_group), rows=vars(sex))+
+  scale_fill_manual(values = pal) + 
+  scale_colour_manual(values=pal)+
+  labs(x="acsc_group", y="props of ACSCs admissions")+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=45))
+
+
+
+dt_acsc<-dt_acsc %>% 
+  mutate(conds5=ifelse(acsc_group %in% c("asthma", "CHF","COPD","diabetes","hypertension"),1,0))
+
+
+dt_acsc %>% 
+  filter(dep_type=="IMD"& conds5==1) %>% 
+  group_by(acsc_group) %>% 
+  summarise(count=sum(count)) %>% 
+  ungroup() %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=100*(count/total)) 
+
+
+dt_acsc %>% 
+  filter(dep_type=="IMD"& conds5==1& plus65==1) %>% 
+  group_by(acsc_group) %>% 
+  summarise(count=sum(count)) %>% 
+  ungroup() %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=100*(count/total)) 
+
+
+dt_acsc %>% 
+  filter(dep_type=="IMD"& conds5==1) %>% 
+  group_by(acsc_group, quintile) %>% 
+  summarise(count=sum(count)) %>% 
+  ungroup() %>% 
+  group_by(quintile) %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=100*(count/total)) %>% 
+  ggplot(aes(x=acsc_group, y=prop, fill=quintile, colour=quintile))+
+  geom_bar(stat="identity", position="dodge") +
+  #facet_grid(cols=vars(acsc_group), rows=vars(sex))+
+  scale_fill_manual(values = pal) + 
+  scale_colour_manual(values=pal)+
+  labs(x="acsc_group", y="props of ACSCs admissions")+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=45))
+
+
+
+dt_acsc %>% 
+  filter(dep_type=="income"& conds5==1) %>% 
+  group_by(acsc_group, quintile) %>% 
+  summarise(count=sum(count)) %>% 
+  ungroup() %>% 
+  group_by(quintile) %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=100*(count/total)) %>% 
+  ggplot(aes(x=acsc_group, y=prop, fill=quintile, colour=quintile))+
+  geom_bar(stat="identity", position="dodge") +
+  #facet_grid(cols=vars(acsc_group), rows=vars(sex))+
+  scale_fill_manual(values = pal) + 
+  scale_colour_manual(values=pal)+
+  labs(x="acsc_group", y="props of ACSCs admissions")+
+  theme_minimal()+
+  theme(axis.text.x=element_text(angle=45))
+
+dt_acsc %>% 
+  filter(dep_type=="IMD"& conds5==1&plus65==1) %>% 
+  group_by(acsc_group, quintile) %>% 
+  summarise(count=sum(count)) %>% 
+  ungroup() %>% 
+  group_by(quintile) %>% 
+  mutate(total=sum(count)) %>% 
+  mutate(prop=100*(count/total)) %>% 
+  ggplot(aes(x=acsc_group, y=prop, fill=quintile, colour=quintile))+
+  geom_bar(stat="identity", position="dodge") +
+  #facet_grid(cols=vars(acsc_group), rows=vars(sex))+
+  scale_fill_manual(values = pal) + 
+  scale_colour_manual(values=pal)+
+  labs(x="acsc_group", y="props of ACSCs admissions")+
   theme_minimal()+
   theme(axis.text.x=element_text(angle=45))
 

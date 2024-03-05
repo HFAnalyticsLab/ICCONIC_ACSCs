@@ -49,6 +49,7 @@ pop_clean<-pop %>%
 #work out mean age, sd, and median
 
 calcs<-pop_clean %>% 
+  filter(age>=18) %>% 
   group_by(age) %>% 
   summarise(count=sum(pop))
 
@@ -76,23 +77,17 @@ calcs65<-pop_clean %>%
   summarise(count=sum(pop)) %>% 
   filter(age>=65)
 
-#calculate mid point for each group 
-calcs65$midpoint <- (calcs65$age - 0.5) * 1
-
-# Calculate total count of the population
-total_count65 <- sum(calcs65$count)
-
 # Calculate weighted mean age
-weighted_mean_age65 <- sum(calcs65$midpoint * calcs65$count) / total_count65
+weighted_mean_age65<-weighted.mean(calcs65$age, calcs65$count)
+
+#mean(rep(calcs65$age, times=calcs65$count))
 
 # Calculate weighted standard deviation (SD) age
-weighted_sd_age65 <- sqrt(sum((calcs65$midpoint - weighted_mean_age65)^2 * calcs65$count) / total_count65)
-
-# Calculate cumulative sum of population counts
-calcs65$cumulative_count <- cumsum(calcs65$count)
+weighted_sd_age65 <- sqrt(weighted.mean(calcs65$age ^ 2, w=calcs65$count) - weighted.mean(calcs65$age, w=calcs65$count) ^ 2)
 
 # Find median age
-median_age65 <- min(calcs65$age[calcs65$cumulative_count >= total_count65 / 2])
+median_age65 <- median(rep(calcs65$age, times=calcs65$count))
+
 
 # Print the results
 print(paste("Mean Age:", weighted_mean_age65))
