@@ -8,7 +8,7 @@ Hospitalisation for ambultory care sensitive conditions (ACSCs) are conditions a
 
 The International Collaborative on Costs, Outcomes, and Needs in Care (ICCONIC) program sought to examine the differences in the gradient of ACSC relative to socioeconomic status across eight high-incomehigh income countries. The aim of this study was to determine whether there are differences across countries in the SES gradient in ACSC hospitalizations. 
 
-This repo outlines how the England data was extracted, aggregated and visualised for the cross-country comparison analysis. 
+This repository outlines how the England data was extracted, aggregated and visualised for the cross-country comparison analysis. 
 
 ## Outputs
 
